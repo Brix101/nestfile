@@ -9,6 +9,7 @@ function useGetAuthUser(options?: UseQueryOptions<Resources, AxiosError>) {
   return useQuery({
     queryKey: [QUERY_KEYS.AUTH_USER],
     queryFn: getUserQuery,
+    notifyOnChangeProps: "all",
     ...options,
   });
 }
