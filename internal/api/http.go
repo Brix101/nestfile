@@ -1,21 +1,29 @@
-package http
+package api
 
 import (
+	"context"
+	"database/sql"
 	"fmt"
+	"io/fs"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
+	"go.uber.org/zap"
 )
 
 type api struct {
+	logger     *zap.Logger
 	httpClient *http.Client
 }
 
-func NewHTTPHandler() *api {
+func NewHTTPHandler(ctx context.Context, logger *zap.Logger, db *sql.DB, assetsFs fs.FS) *api {
+
 	client := &http.Client{}
+
 	return &api{
+		logger:     logger,
 		httpClient: client,
 	}
 }

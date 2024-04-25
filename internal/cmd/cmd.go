@@ -2,32 +2,59 @@ package cmd
 
 import (
 	"context"
-	"net/http"
+	"os"
+	"runtime"
+	"runtime/pprof"
 
 	"github.com/spf13/cobra"
 )
 
 func Execute(ctx context.Context) int {
+
+	profile := false
+
 	rootCmd := &cobra.Command{
 		Use:   "nestfile",
 		Short: "A stylish local web-based file browser",
 		Long:  `Nest File CLI lets you create the database to use with File Browser`,
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			if !profile {
+				return nil
+			}
+
+			f, perr := os.Create("cpu.pprof")
+			if perr != nil {
+				return perr
+			}
+
+			_ = pprof.StartCPUProfile(f)
+			return nil
+		},
+		PersistentPostRunE: func(cmd *cobra.Command, args []string) error {
+			if !profile {
+				return nil
+			}
+
+			pprof.StopCPUProfile()
+
+			f, perr := os.Create("mem.pprof")
+			if perr != nil {
+				return perr
+			}
+			defer f.Close()
+
+			runtime.GC()
+			err := pprof.WriteHeapProfile(f)
+			return err
+		},
 	}
 	rootCmd.SetVersionTemplate("File Browser version {{printf \"%s\" .Version}}\n")
 
-	flags := rootCmd.Flags()
 	persistent := rootCmd.PersistentFlags()
 
-	persistent.StringP("database", "d", "./nestfile.db", "database path")
-	flags.StringP("port", "p", "8080", "port to listen on")
-	flags.String("cache-dir", "", "file cache directory (disabled if empty)")
-	flags.String("username", "admin", "username for the first user when using quick config")
-	flags.String("password", "", "hashed password for the first user when using quick config (default \"admin\")")
-	rootCmd.AddCommand(APICmd(ctx))
+	persistent.BoolVarP(&profile, "profile", "p", false, "record CPU pprof")
 
-	go func() {
-		_ = http.ListenAndServe("localhost:6060", nil)
-	}()
+	rootCmd.AddCommand(APICmd(ctx))
 
 	if err := rootCmd.Execute(); err != nil {
 		return 1
