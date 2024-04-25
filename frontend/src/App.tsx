@@ -1,9 +1,9 @@
 import "@/assets/css/index.css";
 
-import BrowserProvider from "@/providers/BrowserProvider";
+import PageProvider from "@/providers/PageProvider";
 
 function App() {
-  return <BrowserProvider />;
+  return <PageProvider />;
 }
 
 export default App;

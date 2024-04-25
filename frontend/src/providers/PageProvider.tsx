@@ -3,7 +3,7 @@ import LoginPage from "@/pages/Login";
 import FileListingPage from "@/pages/files/FileListing";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 
-function BrowserProvider() {
+function PageProvider() {
   const routes = createBrowserRouter([
     { index: true, element: <LoginPage /> },
     {
@@ -16,4 +16,4 @@ function BrowserProvider() {
   return <RouterProvider router={routes} />;
 }
 
-export default BrowserProvider;
+export default PageProvider;

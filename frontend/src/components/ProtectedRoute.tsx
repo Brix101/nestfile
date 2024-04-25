@@ -1,6 +1,7 @@
-import { useUser } from "@/hooks/useUser";
 import React from "react";
 import { Navigate } from "react-router-dom";
+
+import { useUser } from "@/hooks/useUser";
 
 interface ProtectedRouteProps extends React.PropsWithChildren {}
 

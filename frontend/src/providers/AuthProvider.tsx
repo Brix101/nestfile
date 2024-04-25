@@ -1,11 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
 import React from "react";
 
 import { UserContext } from "@/context/user";
-import api from "@/lib/api";
+import useGetAuthUser from "@/hooks/useGetAuthUser";
 import { deriveState } from "@/lib/deriveState";
 import { InitialState, Resources } from "@/types/auth";
-import { UserResource } from "@/types/user";
 
 export type AuthContextProviderState = Resources;
 
@@ -14,15 +12,7 @@ interface AuthProviderProps extends React.PropsWithChildren {
 }
 
 function AuthProvider({ children, initialState }: AuthProviderProps) {
-  const { data, isLoading } = useQuery({
-    queryKey: ["auth-user"],
-    queryFn: async () => {
-      const response = await api.get<{ user?: UserResource | null }>(
-        "/auth/user",
-      );
-      return response.data;
-    },
-  });
+  const { data, isLoading } = useGetAuthUser();
 
   const [state, setState] = React.useState<AuthContextProviderState>({
     user: data?.user,
@@ -30,7 +20,7 @@ function AuthProvider({ children, initialState }: AuthProviderProps) {
 
   React.useEffect(() => {
     if (data) {
-      setState({ user: data.user });
+      setState(data);
     }
     return () => {
       setState({});
