@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/fs"
 	"net/http"
+	"strings"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -55,12 +56,28 @@ func (a *api) Routes() *chi.Mux {
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	}))
 
+	r.Use(func(h http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if strings.Contains(r.URL.Path, "/api") {
+				h.ServeHTTP(w, r)
+				return
+			}
+			a.hFS.ServeHTTP(w, r)
+		})
+	})
+
 	r.Get("/*", func(w http.ResponseWriter, r *http.Request) {
 		a.hFS.ServeHTTP(w, r)
 	})
+	// r.Get("/*", http.StripPrefix("/", a.hFS).ServeHTTP)
 
 	r.Route("/api", func(r chi.Router) {
 		r.Mount("/auth", a.AuthRoutes())
+	})
+
+	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+		http.Redirect(w, r, "/index.html", http.StatusFound)
 	})
 
 	return r

@@ -3,7 +3,6 @@ package util
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"log"
 	"os"
 
@@ -57,35 +56,40 @@ func NewDatabase(ctx context.Context) (*sql.DB, error) {
 			log.Fatal(err)
 		}
 		defer stmt.Close()
-		for i := 0; i < 100; i++ {
-			_, err = stmt.Exec(fmt.Sprintf("admin%03d", i+1), "password")
-			if err != nil {
-				log.Fatal(err)
-			}
+		// for i := 0; i < 100; i++ {
+		// 	_, err = stmt.Exec(fmt.Sprintf("admin%03d", i+1), "password")
+		// 	if err != nil {
+		// 		log.Fatal(err)
+		// 	}
+		// }
+		_, err = stmt.Exec("admin", "password")
+		if err != nil {
+			log.Fatal(err)
 		}
+
 		err = tx.Commit()
 		if err != nil {
 			log.Fatal(err)
 		}
 	}
-	rows, err := db.Query("select id, username,password from users")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer rows.Close()
-	for rows.Next() {
-		var id int
-		var username string
-		var password string
-		err = rows.Scan(&id, &username, &password)
-		if err != nil {
-			log.Fatal(err)
-		}
-		fmt.Println(id, username, password)
-	}
-	err = db.PingContext(ctx)
-	if err != nil {
-		return nil, err
-	}
+	// rows, err := db.Query("select id, username,password from users")
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// defer rows.Close()
+	// for rows.Next() {
+	// 	var id int
+	// 	var username string
+	// 	var password string
+	// 	err = rows.Scan(&id, &username, &password)
+	// 	if err != nil {
+	// 		log.Fatal(err)
+	// 	}
+	// 	fmt.Println(id, username, password)
+	// }
+	// err = db.PingContext(ctx)
+	// if err != nil {
+	// 	return nil, err
+	// }
 	return db, nil
 }
