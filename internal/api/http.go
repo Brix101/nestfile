@@ -16,15 +16,19 @@ import (
 type api struct {
 	logger     *zap.Logger
 	httpClient *http.Client
+	hFS        http.Handler
 }
 
 func NewHTTPHandler(ctx context.Context, logger *zap.Logger, db *sql.DB, assetsFs fs.FS) *api {
 
 	client := &http.Client{}
 
+	hFS := http.FileServer(http.FS(assetsFs))
+
 	return &api{
 		logger:     logger,
 		httpClient: client,
+		hFS:        hFS,
 	}
 }
 
@@ -50,6 +54,10 @@ func (a *api) Routes() *chi.Mux {
 		AllowCredentials: false,
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	}))
+
+	r.Get("/*", func(w http.ResponseWriter, r *http.Request) {
+		a.hFS.ServeHTTP(w, r)
+	})
 
 	r.Route("/api", func(r chi.Router) {
 		r.Mount("/auth", a.AuthRoutes())

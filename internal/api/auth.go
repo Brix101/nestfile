@@ -10,7 +10,6 @@ import (
 func (a api) AuthRoutes() chi.Router {
 	r := chi.NewRouter()
 	// r.Use() // some middleware..
-
 	r.Post("/sign-in", a.signInHandler)
 	r.Post("/sign-up", a.signUpHandler)
 	r.Get("/user", a.getUserHandler)

@@ -25,8 +25,6 @@ func NewLogger(service string) *zap.Logger {
 }
 
 func NewDatabase(ctx context.Context) (*sql.DB, error) {
-	// os.Remove("./foo.db")
-
 	db, err := sql.Open("sqlite3", "./nestfile.db")
 	if err != nil {
 		return nil, err
