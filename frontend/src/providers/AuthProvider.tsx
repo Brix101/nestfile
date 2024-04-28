@@ -15,7 +15,7 @@ function AuthProvider({ children, initialState }: AuthProviderProps) {
   const { data, isLoading } = useGetAuthUser();
 
   const [state, setState] = React.useState<AuthContextProviderState>({
-    user: data?.user,
+    ...data,
   });
 
   React.useEffect(() => {

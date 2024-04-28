@@ -10,7 +10,7 @@ export type ServerGetToken = (
 ) => Promise<string | null>;
 
 export type InitialState = Serializable<{
-  // userId: string | undefined;
+  userId: number | undefined;
   user: UserResource | undefined | null;
 }>;
 

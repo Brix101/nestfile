@@ -1,5 +1,5 @@
 export interface UserResource {
-  id: string;
+  id: number;
   username: string;
   createdAt: string;
   updatedAt: string;

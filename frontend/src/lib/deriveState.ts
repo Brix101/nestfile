@@ -13,23 +13,23 @@ export const deriveState = (
 };
 
 const deriveFromSsrInitialState = (initialState: InitialState) => {
-  // const userId = initialState.userId;
+  const userId = initialState.userId;
   const user = initialState.user as UserResource;
 
   return {
-    // userId,
+    userId,
     user,
   };
 };
 
 const deriveFromClientSideState = (state: Resources) => {
-  // const userId: string | null | undefined = state.user
-  //   ? state.user.id
-  //   : state.user;
+  const userId: number | null | undefined = state.user
+    ? state.user.id
+    : state.user;
   const user = state.user;
 
   return {
-    // userId,
+    userId,
     user,
   };
 };

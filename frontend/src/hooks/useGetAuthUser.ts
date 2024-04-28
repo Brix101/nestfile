@@ -7,7 +7,7 @@ import { Resources } from "@/types/auth";
 
 function useGetAuthUser(options?: UseQueryOptions<Resources, AxiosError>) {
   return useQuery({
-    queryKey: [QUERY_KEYS.AUTH_USER],
+    queryKey: [QUERY_KEYS.auth_user],
     queryFn: getUserQuery,
     notifyOnChangeProps: "all",
     ...options,

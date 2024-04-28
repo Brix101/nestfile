@@ -5,7 +5,7 @@ function LoginPage() {
   const { user, isLoaded } = useUser();
 
   if (isLoaded && user) {
-    return <Navigate to="/" />;
+    return <Navigate to="/files" />;
   }
 
   return <div>Login Page</div>;
