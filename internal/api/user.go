@@ -14,21 +14,21 @@ func (a api) UserRoutes() chi.Router {
 	r := chi.NewRouter()
 	// r.Use() // some middleware..
 
-	r.Get("/", a.UserList)    // GET /users - read a list of users
-	r.Post("/", a.UserCreate) // POST /users - create a new user and persist it
-	r.Put("/", a.UserDelete)
+	r.Get("/", a.userListHandler)    // GET /users - read a list of users
+	r.Post("/", a.userCreateHandler) // POST /users - create a new user and persist it
+	r.Put("/", a.userDeleteHandler)
 
 	r.Route("/{id}", func(r chi.Router) {
 		// r.Use(a.TodoCtx) // lets have a users map, and lets actually load/manipulate
-		r.Get("/", a.UserGet)       // GET /users/{id} - read a single user by :id
-		r.Put("/", a.UserUpdate)    // PUT /users/{id} - update a single user by :id
-		r.Delete("/", a.UserDelete) // DELETE /users/{id} - delete a single user by :id
+		r.Get("/", a.userGetHandler)       // GET /users/{id} - read a single user by :id
+		r.Put("/", a.userUpdateHandler)    // PUT /users/{id} - update a single user by :id
+		r.Delete("/", a.userDeleteHandler) // DELETE /users/{id} - delete a single user by :id
 	})
 
 	return r
 }
 
-func (a api) UserList(w http.ResponseWriter, r *http.Request) {
+func (a api) userListHandler(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithCancel(r.Context())
 	defer cancel()
 
@@ -54,7 +54,7 @@ type createUserRequest struct {
 	Password string `json:"password" validate:"required,min=6"` // Minimum length: 6
 }
 
-func (a api) UserCreate(w http.ResponseWriter, r *http.Request) {
+func (a api) userCreateHandler(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithCancel(r.Context())
 	defer cancel()
 
@@ -87,14 +87,14 @@ func (a api) UserCreate(w http.ResponseWriter, r *http.Request) {
 	w.Write(resJSON)
 }
 
-func (a api) UserGet(w http.ResponseWriter, r *http.Request) {
+func (a api) userGetHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("user get"))
 }
 
-func (a api) UserUpdate(w http.ResponseWriter, r *http.Request) {
+func (a api) userUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("user update"))
 }
 
-func (a api) UserDelete(w http.ResponseWriter, r *http.Request) {
+func (a api) userDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("user delete"))
 }
