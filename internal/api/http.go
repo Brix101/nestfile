@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/Brix101/nestfile/internal/domain"
+	"github.com/Brix101/nestfile/internal/repository"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
@@ -18,9 +20,13 @@ type api struct {
 	logger     *zap.Logger
 	httpClient *http.Client
 	hFS        http.Handler
+
+	userRepo domain.UserRepository
 }
 
 func NewHTTPHandler(ctx context.Context, logger *zap.Logger, db *sql.DB, assetsFs fs.FS) *api {
+
+	userRepo := repository.NewSqlUser(db)
 
 	client := &http.Client{}
 
@@ -30,6 +36,8 @@ func NewHTTPHandler(ctx context.Context, logger *zap.Logger, db *sql.DB, assetsF
 		logger:     logger,
 		httpClient: client,
 		hFS:        hFS,
+
+		userRepo: userRepo,
 	}
 }
 
@@ -73,6 +81,7 @@ func (a *api) Routes() *chi.Mux {
 
 	r.Route("/api", func(r chi.Router) {
 		r.Mount("/auth", a.AuthRoutes())
+		r.Mount("/users", a.UserRoutes())
 	})
 
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {

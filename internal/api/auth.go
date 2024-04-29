@@ -3,8 +3,8 @@ package api
 import (
 	"encoding/json"
 	"net/http"
-	"time"
 
+	"github.com/Brix101/nestfile/internal/domain"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -26,16 +26,8 @@ func (a api) signUpHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Sign up stuff"))
 }
 
-type User struct {
-	ID        uint      `json:"id"`
-	Username  string    `json:"username"`
-	Password  string    `json:"-"`
-	CreatedAt time.Time `json:"createdAt"`
-	UpdatedAt time.Time `json:"updatedAt"`
-}
-
 type ResponseUser struct {
-	User *User `json:"user"`
+	User *domain.User `json:"user"`
 }
 
 func (a api) getUserHandler(w http.ResponseWriter, r *http.Request) {

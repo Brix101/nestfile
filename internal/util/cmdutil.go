@@ -28,15 +28,16 @@ func NewDatabase(ctx context.Context) (*sql.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer db.Close()
 
 	sqlStmt := `
-	CREATE TABLE IF NOT EXISTS users (
-	id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT UNIQUE NOT NULL,
-    password TEXT NOT NULL
-	);
-	`
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT UNIQUE NOT NULL,
+        password TEXT NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+`
 	_, err = db.Exec(sqlStmt)
 	if err != nil {
 		log.Printf("%q: %s\n", err, sqlStmt)
@@ -56,13 +57,13 @@ func NewDatabase(ctx context.Context) (*sql.DB, error) {
 			log.Fatal(err)
 		}
 		defer stmt.Close()
-		// for i := 0; i < 100; i++ {
-		// 	_, err = stmt.Exec(fmt.Sprintf("admin%03d", i+1), "password")
-		// 	if err != nil {
-		// 		log.Fatal(err)
-		// 	}
-		// }
-		_, err = stmt.Exec("admin", "password")
+
+		pass,err := HashPwd("password")
+		if err != nil{
+			log.Fatal(err)
+		}
+
+		_, err = stmt.Exec("admin", pass)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -72,24 +73,12 @@ func NewDatabase(ctx context.Context) (*sql.DB, error) {
 			log.Fatal(err)
 		}
 	}
-	// rows, err := db.Query("select id, username,password from users")
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// defer rows.Close()
-	// for rows.Next() {
-	// 	var id int
-	// 	var username string
-	// 	var password string
-	// 	err = rows.Scan(&id, &username, &password)
-	// 	if err != nil {
-	// 		log.Fatal(err)
-	// 	}
-	// 	fmt.Println(id, username, password)
-	// }
-	// err = db.PingContext(ctx)
-	// if err != nil {
-	// 	return nil, err
-	// }
+
+	err = db.PingContext(ctx)
+	if err != nil {
+		db.Close() // Close the database if there's an error
+		return nil, err
+	}
+
 	return db, nil
 }
