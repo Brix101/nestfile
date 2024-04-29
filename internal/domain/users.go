@@ -3,6 +3,8 @@ package domain
 import (
 	"context"
 	"time"
+
+	"github.com/Brix101/nestfile/internal/util"
 )
 
 type User struct {
@@ -11,6 +13,12 @@ type User struct {
 	Password  string    `json:"-"`
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
+}
+
+
+func (u User) CheckPassword(password string) bool {
+	res := util.CheckPwd(password, u.Password)
+	return res
 }
 
 // UserRepository represents the user's repository contract

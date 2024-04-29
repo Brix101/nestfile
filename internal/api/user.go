@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/Brix101/nestfile/internal/domain"
+	"github.com/Brix101/nestfile/internal/util"
 	"github.com/go-chi/chi/v5"
 	"go.uber.org/zap"
 )
@@ -64,9 +65,16 @@ func (a api) userCreateHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	pwd, err := util.HashPwd(reqBody.Password)
+	if err != nil {
+		a.logger.Error("failed to create user", zap.Error(err))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	newUsr := domain.User{
 		Username: reqBody.Username,
-		Password: reqBody.Password,
+		Password: pwd,
 	}
 
 	usr, err := a.userRepo.Create(ctx, &newUsr)
