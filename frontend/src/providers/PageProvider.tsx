@@ -37,7 +37,7 @@ function PageProvider() {
 }
 
 function Loading() {
-  return <>Loading</>;
+  return <>Loading...</>;
 }
 
 export default PageProvider;

@@ -1,55 +1,24 @@
-import React from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
-import { UserContext } from "@/context/user";
-import useGetAuthUser from "@/hooks/useGetAuthUser";
-import { deriveState } from "@/lib/deriveState";
+import { getUserQuery } from "@/services/user-service";
 import { InitialState, Resources } from "@/types/auth";
+import AuthContextProvider from "./AuthContextProvider";
 
-export type AuthContextProviderState = Resources;
+function AuthProvider({ children }: React.PropsWithChildren) {
+  const queryClient = useQueryClient();
 
-interface AuthProviderProps extends React.PropsWithChildren {
-  initialState?: InitialState;
-}
-
-function AuthProvider({ children, initialState }: AuthProviderProps) {
-  const { data, isLoading } = useGetAuthUser();
-
-  const [state, setState] = React.useState<AuthContextProviderState>({
-    ...data,
-  });
-
-  React.useEffect(() => {
-    if (data) {
-      setState(data);
-    }
-    return () => {
-      setState({});
-    };
-  }, [data]);
-
-  const { user } = deriveState(isLoading, state, initialState);
-  const userCtx = React.useMemo(() => ({ value: user }), [user]);
+  const query = getUserQuery();
+  const data = queryClient.getQueryData<Resources>(query.queryKey);
+  const initialState: InitialState = {
+    userId: data?.user?.id,
+    user: data?.user,
+  };
 
   return (
-    <UserContext.Provider value={userCtx}>{children}</UserContext.Provider>
+    <AuthContextProvider initialState={initialState}>
+      {children}
+    </AuthContextProvider>
   );
-}
-
-export function useAssertWrappedByAuthProvider(
-  displayNameOrFn: string | (() => void),
-): void {
-  const ctx = React.useContext(UserContext);
-
-  if (!ctx) {
-    if (typeof displayNameOrFn === "function") {
-      displayNameOrFn();
-      return;
-    }
-
-    throw new Error(
-      `${displayNameOrFn} can only be used within the <AuthProvider /> component.`,
-    );
-  }
 }
 
 export default AuthProvider;

@@ -40,15 +40,15 @@ type ResponseUser struct {
 
 func (a api) getUserHandler(w http.ResponseWriter, r *http.Request) {
 	// Create a user object with null value
-	user := &User{
-		ID:        1,
-		Username:  "admin",
-		Password:  "password",
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
-	}
+	// user := &User{
+	// 	ID:        1,
+	// 	Username:  "admin",
+	// 	Password:  "password",
+	// 	CreatedAt: time.Now(),
+	// 	UpdatedAt: time.Now(),
+	// }
 	data := ResponseUser{
-		User: user,
+		User: nil,
 	}
 
 	// Convert data object to JSON
