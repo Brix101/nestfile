@@ -27,6 +27,10 @@ type loginRequest struct {
 	Password string `json:"password" validate:"required,min=6"` // Minimum length: 6
 }
 
+type ResponseUser struct {
+	User *domain.User `json:"user"`
+}
+
 func (a api) loginHandler(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithCancel(r.Context())
 	defer cancel()
@@ -61,7 +65,11 @@ func (a api) loginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resJSON, err := json.Marshal(usr)
+	data := ResponseUser{
+		User: &usr,
+	}
+
+	resJSON, err := json.Marshal(data)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -88,21 +96,19 @@ func (a api) signUpHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Sign up stuff"))
 }
 
-type ResponseUser struct {
-	User *domain.User `json:"user"`
-}
-
 func (a api) getUserHandler(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithCancel(r.Context())
 	defer cancel()
-
+	// TODO move this section to its own  getter
 	var user *domain.User
-	item, ok := ctx.Value(middlewares.UserCtxKey{}).(*domain.UserClaims)
-	if ok {
-		// Get user from repository
-		usr, err := a.userRepo.GetByID(ctx, int64(item.Sub))
-		if err == nil {
-			user = &usr
+	usrCtx := ctx.Value(middlewares.UserCtxKey{})
+	if usrCtx != nil {
+		item, ok := usrCtx.(*domain.UserClaims)
+		if ok {
+			usr, err := a.userRepo.GetByID(ctx, int64(item.Sub))
+			if err == nil {
+				user = &usr
+			}
 		}
 	}
 

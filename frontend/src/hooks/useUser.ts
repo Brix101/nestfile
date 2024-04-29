@@ -17,7 +17,7 @@ type UseUserReturn =
  * @example
  * A simple example:
  *
- * import { useUser } from '@clerk/clerk-react'
+ * import { useUser } from '@hooks/useUser'
  *
  * function Hello() {
  *   const { isSignedIn, user } = useUser();

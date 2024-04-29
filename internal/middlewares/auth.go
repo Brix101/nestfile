@@ -19,30 +19,26 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		tokenSecret := TokenSecret
 		tokenString := extractTokenFromCookie(r)
 
-		if tokenString == "" {
-			http.Error(w, "Unauthorized", http.StatusUnauthorized)
-			return
+		var ctx context.Context
+		var claims *domain.UserClaims
+		if tokenString != "" {
+			token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+				// You should implement your own logic to validate the token and return the appropriate key
+				// For example, you could use a secret key or a public key
+				return []byte(tokenSecret), nil
+			})
+
+			if err == nil || token.Valid {
+				tokenClaims, err := transformMapClaimsToUserClaims(token.Claims)
+				if err == nil {
+					claims = tokenClaims
+				}
+			}
+
+			ctx = context.WithValue(r.Context(), UserCtxKey{}, claims)
+		} else {
+			ctx = r.Context()
 		}
-
-		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-			// You should implement your own logic to validate the token and return the appropriate key
-			// For example, you could use a secret key or a public key
-			return []byte(tokenSecret), nil
-		})
-
-		if err != nil || !token.Valid {
-			http.Error(w, "Unauthorized", http.StatusUnauthorized)
-			return
-		}
-
-		// Set the claims in the context
-		claims, err := transformMapClaimsToUserClaims(token.Claims)
-		if err != nil {
-			http.Error(w, "Unauthorized", http.StatusUnauthorized)
-			return
-		}
-
-		ctx := context.WithValue(r.Context(), UserCtxKey{}, claims)
 
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
