@@ -31,7 +31,7 @@ function PageProvider() {
 
   return (
     <Suspense fallback={<Loading />}>
-      <RouterProvider router={routes} />;
+      <RouterProvider router={routes} />
     </Suspense>
   );
 }
