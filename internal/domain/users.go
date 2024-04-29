@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/Brix101/nestfile/internal/util"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 type User struct {
@@ -15,13 +16,52 @@ type User struct {
 	UpdatedAt time.Time `json:"updatedAt"`
 }
 
-
-func (u User) CheckPassword(password string) bool {
+func (u User) CheckPwd(password string) bool {
 	res := util.CheckPwd(password, u.Password)
 	return res
 }
 
-// UserRepository represents the user's repository contract
+func (u *User) HashPwd() error {
+	pwd, err := util.HashPwd(u.Password)
+	if err != nil {
+		return err
+	}
+
+	u.Password = pwd
+	return nil
+}
+
+type UserClaims struct {
+	jwt.RegisteredClaims
+	Username string `json:"username"`
+	Sub      int    `json:"sub"`
+}
+
+// TODO move this constant into a config
+const TokenSecret = "TGPTOfayPAqvUSRxRWhyyo4DsKwVxjQPJLa4Vim4u8E"
+
+func (u User) GenerateClaims() (string, error) {
+	tokenSecret := TokenSecret
+	claims := UserClaims{
+		jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 72)),
+		},
+		u.Username,
+		int(u.ID),
+	}
+
+	// Create token with claims
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	// Generate encoded token and send it as response.
+	t, err := token.SignedString([]byte(tokenSecret))
+	if err != nil {
+		return "", err
+	}
+
+	return t, nil
+}
+
 type UserRepository interface {
 	GetByID(ctx context.Context, id int64) (User, error)
 	GetByUsername(ctx context.Context, username string) (User, error)

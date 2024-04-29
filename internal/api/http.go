@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/Brix101/nestfile/internal/domain"
+	"github.com/Brix101/nestfile/internal/middlewares"
 	"github.com/Brix101/nestfile/internal/repository"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -55,6 +56,7 @@ func (a *api) Routes() *chi.Mux {
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
+	r.Use(middlewares.AuthMiddleware)
 
 	r.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"http://192.168.254.152/:5173", "http://localhost:5173"},
