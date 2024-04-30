@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io/fs"
 	"net/http"
-	"strings"
 
 	"github.com/Brix101/nestfile/internal/domain"
 	"github.com/Brix101/nestfile/internal/middlewares"
@@ -20,7 +19,7 @@ import (
 type api struct {
 	logger     *zap.Logger
 	httpClient *http.Client
-	hFS        http.Handler
+	assetsFs   fs.FS
 
 	userRepo domain.UserRepository
 }
@@ -31,12 +30,10 @@ func NewHTTPHandler(ctx context.Context, logger *zap.Logger, db *sql.DB, assetsF
 
 	client := &http.Client{}
 
-	hFS := http.FileServer(http.FS(assetsFs))
-
 	return &api{
 		logger:     logger,
 		httpClient: client,
-		hFS:        hFS,
+		assetsFs:   assetsFs,
 
 		userRepo: userRepo,
 	}
@@ -66,30 +63,19 @@ func (a *api) Routes() *chi.Mux {
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	}))
 
-	r.Use(func(h http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if strings.Contains(r.URL.Path, "/api") {
-				h.ServeHTTP(w, r)
-				return
-			}
-			a.hFS.ServeHTTP(w, r)
-		})
-	})
+	staticHandler := func(w http.ResponseWriter, r *http.Request) {
+		http.FileServer(http.FS(a.assetsFs)).ServeHTTP(w, r)
+	}
 
-	r.Get("/*", func(w http.ResponseWriter, r *http.Request) {
-		a.hFS.ServeHTTP(w, r)
-	})
-	// r.Get("/*", http.StripPrefix("/", a.hFS).ServeHTTP)
+	r.Get("/vite.svg", staticHandler)
+	r.Get("/assets/*", staticHandler)
 
 	r.Route("/api", func(r chi.Router) {
 		r.Mount("/auth", a.AuthRoutes())
 		r.Mount("/users", a.UserRoutes())
 	})
 
-	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-		http.Redirect(w, r, "/index.html", http.StatusFound)
-	})
+	r.NotFound(a.indexHandler)
 
 	return r
 }
