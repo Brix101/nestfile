@@ -2,10 +2,13 @@ import { CommandMenu } from "@/components/CommandMenu";
 import ModeToggle from "@/components/ModeToggle";
 import { Icons } from "@/components/icons";
 import { siteConfig } from "@/config/site";
+import { UserDropdown } from "../UserDropdown";
+import { useUser } from "@/hooks/useUser";
 
 function SiteHeader() {
+  const { user } = useUser();
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-md">
+    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex justify-between h-14 max-w-screen-2xl items-center">
         <div className="flex gap-6 md:gap-10">
           <div className="flex items-center space-x-2">
@@ -17,8 +20,9 @@ function SiteHeader() {
           <CommandMenu />
         </div>
         <div className="flex items-center justify-between space-x-2 md:justify-end">
-          <nav className="flex items-center">
+          <nav className="flex items-center space-x-2">
             <ModeToggle />
+            <UserDropdown user={user} />
           </nav>
         </div>
       </div>
