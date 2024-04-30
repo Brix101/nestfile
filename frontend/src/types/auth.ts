@@ -1,4 +1,7 @@
+import { z } from "zod";
+
 import { Serializable } from "@/lib/utils";
+import { loginSchema } from "@/lib/validations/auth";
 import { UserResource } from "@/types/user";
 
 // eslint-disable-next-line @typescript-eslint/ban-types
@@ -17,3 +20,5 @@ export type InitialState = Serializable<{
 export interface Resources {
   user?: UserResource | null;
 }
+
+export type LoginInput = z.infer<typeof loginSchema>;

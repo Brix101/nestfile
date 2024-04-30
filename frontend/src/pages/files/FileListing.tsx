@@ -1,19 +1,22 @@
+import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
-import { QUERY_KEYS } from "@/constant/query-key";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutateUserLogout } from "@/hooks/mutation";
 
 function FileListingPage() {
-  const queryClient = useQueryClient();
+  const { mutate, isPending } = useMutateUserLogout();
 
   return (
     <div>
       File Listing Page
-      <Button
-        onClick={() =>
-          queryClient.setQueryData([QUERY_KEYS.auth_user], { user: null })
-        }
-      >
+      <Button onClick={() => mutate()}>
+        {isPending && (
+          <Icons.spinner
+            className="mr-2 size-4 animate-spin"
+            aria-hidden="true"
+          />
+        )}
         Logout
+        <span className="sr-only">Logout</span>
       </Button>
     </div>
   );

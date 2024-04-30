@@ -1,6 +1,6 @@
 import * as z from "zod";
 
-export const authSchema = z.object({
+export const loginSchema = z.object({
   username: z.string(),
   password: z
     .string()
@@ -10,13 +10,4 @@ export const authSchema = z.object({
     .max(100, {
       message: "Password must be at most 100 characters long",
     }),
-});
-
-export const verifyEmailSchema = z.object({
-  code: z
-    .string()
-    .min(6, {
-      message: "Verification code must be 6 characters long",
-    })
-    .max(6),
 });

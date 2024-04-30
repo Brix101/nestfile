@@ -1,15 +1,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 
-import { QUERY_KEYS } from "@/constant/query-key";
-import api from "@/lib/api";
-import { authSchema } from "@/lib/validations/auth";
-import { UserResource } from "@/types/user";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Icons } from "../icons";
-import { PasswordInput } from "../password-input";
-import { Button } from "../ui/button";
+import { Icons } from "@/components/icons";
+import { PasswordInput } from "@/components/password-input";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -17,35 +11,28 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../ui/form";
-import { Input } from "../ui/input";
-
-type Inputs = z.infer<typeof authSchema>;
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { useMutateUserLogin } from "@/hooks/mutation";
+import { loginSchema } from "@/lib/validations/auth";
+import { LoginInput } from "@/types/auth";
 
 export function UserAuthForm() {
-  const queryClient = useQueryClient();
-
-  const { mutate, isPending } = useMutation({
-    mutationFn: (data: Inputs) => {
-      return api.post<UserResource>("/auth/login", JSON.stringify(data));
-    },
-    onSuccess: (response) => {
-      queryClient.setQueryData([QUERY_KEYS.auth_user], response.data);
-    },
-    onError: (error) => {
-      console.log(error);
-    },
-  });
-
-  const form = useForm<Inputs>({
-    resolver: zodResolver(authSchema),
+  const form = useForm<LoginInput>({
+    resolver: zodResolver(loginSchema),
     defaultValues: {
       username: "",
       password: "",
     },
   });
 
-  async function onSubmit(data: Inputs) {
+  const { mutate, isPending } = useMutateUserLogin({
+    onError: (error) => {
+      console.log(error);
+    },
+  });
+
+  async function onSubmit(data: LoginInput) {
     mutate(data);
   }
 

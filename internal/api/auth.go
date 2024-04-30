@@ -16,6 +16,7 @@ func (a api) AuthRoutes() chi.Router {
 	r := chi.NewRouter()
 	// r.Use() // some middleware..
 	r.Post("/login", a.loginHandler)
+	r.Post("/logout", a.logoutHandler)
 	r.Post("/sign-up", a.signUpHandler)
 	r.Get("/user", a.getUserHandler)
 
@@ -90,6 +91,33 @@ func (a api) loginHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Write(resJSON)
 
+}
+
+func (a api) logoutHandler(w http.ResponseWriter, r *http.Request) {
+	data := ResponseUser{
+		User: nil,
+	}
+
+	resJSON, err := json.Marshal(data)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	// Create and set cookies in the response
+	cookie := http.Cookie{
+		Name:     middlewares.NestfileToken, // Cookie name
+		Value:    "",                        // Clear the cookie value for logout
+		Path:     "/",                       // Cookie path
+		HttpOnly: true,                      // Prevent JavaScript access
+		MaxAge:   -1,                        // Set MaxAge to negative value to expire the cookie
+	}
+
+	http.SetCookie(w, &cookie)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(resJSON)
 }
 
 func (a api) signUpHandler(w http.ResponseWriter, r *http.Request) {
