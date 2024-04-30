@@ -20,7 +20,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		tokenString := extractTokenFromCookie(r)
 
 		var ctx context.Context
-		var claims *domain.UserClaims
+		var claims *domain.AuthToken
 		if tokenString != "" {
 			token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 				// You should implement your own logic to validate the token and return the appropriate key
@@ -52,22 +52,21 @@ func extractTokenFromCookie(r *http.Request) string {
 	return cookie.Value
 }
 
-func transformMapClaimsToUserClaims(claims jwt.Claims) (*domain.UserClaims, error) {
+func transformMapClaimsToUserClaims(claims jwt.Claims) (*domain.AuthToken, error) {
 	if jwtClaims, ok := claims.(jwt.MapClaims); ok {
 		sub, ok := jwtClaims["sub"].(float64)
 		if !ok {
 			return nil, fmt.Errorf("invalid 'sub' claim")
 		}
 
-		username, ok := jwtClaims["username"].(string)
-		if !ok {
-			return nil, fmt.Errorf("invalid 'usename' claim")
-		}
+		// username, ok := jwtClaims["username"].(string)
+		// if !ok {
+		// 	return nil, fmt.Errorf("invalid 'usename' claim")
+		// }
 
 		// Create a new instance of *UserClaims with the extracted values
-		userClaims := &domain.UserClaims{
-			Sub:      int(sub),
-			Username: username,
+		userClaims := &domain.AuthToken{
+			Sub: int(sub),
 		}
 
 		// Add other custom claim fields here if needed

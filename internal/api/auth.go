@@ -131,7 +131,7 @@ func (a api) getUserHandler(w http.ResponseWriter, r *http.Request) {
 	var user *domain.User
 	usrCtx := ctx.Value(middlewares.UserCtxKey{})
 	if usrCtx != nil {
-		item, ok := usrCtx.(*domain.UserClaims)
+		item, ok := usrCtx.(*domain.AuthToken)
 		if ok {
 			usr, err := a.userRepo.GetByID(ctx, int64(item.Sub))
 			if err == nil {

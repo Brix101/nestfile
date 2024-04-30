@@ -31,10 +31,9 @@ func (u *User) HashPwd() error {
 	return nil
 }
 
-type UserClaims struct {
+type AuthToken struct {
 	jwt.RegisteredClaims
-	Username string `json:"username"`
-	Sub      int    `json:"sub"`
+	Sub int `json:"sub"`
 }
 
 // TODO move this constant into a config
@@ -42,11 +41,12 @@ const TokenSecret = "TGPTOfayPAqvUSRxRWhyyo4DsKwVxjQPJLa4Vim4u8E"
 
 func (u User) GenerateClaims() (string, error) {
 	tokenSecret := TokenSecret
-	claims := UserClaims{
+	claims := AuthToken{
 		jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 72)),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24)),
+			Issuer:    "Nestfile",
 		},
-		u.Username,
 		int(u.ID),
 	}
 
