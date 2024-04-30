@@ -49,6 +49,7 @@ func (a *api) Server(port int) *http.Server {
 func (a *api) Routes() *chi.Mux {
 	r := chi.NewRouter()
 
+	r.Use(middleware.StripSlashes)
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Logger)
@@ -63,19 +64,17 @@ func (a *api) Routes() *chi.Mux {
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	}))
 
-	staticHandler := func(w http.ResponseWriter, r *http.Request) {
-		http.FileServer(http.FS(a.assetsFs)).ServeHTTP(w, r)
-	}
+	index, static := getStaticHandler(a.assetsFs, a.logger)
 
-	r.Get("/vite.svg", staticHandler)
-	r.Get("/assets/*", staticHandler)
+	r.Get("/vite*", static)
+	r.Get("/assets/*", static)
 
 	r.Route("/api", func(r chi.Router) {
 		r.Mount("/auth", a.AuthRoutes())
 		r.Mount("/users", a.UserRoutes())
 	})
 
-	r.NotFound(a.indexHandler)
+	r.NotFound(index)
 
 	return r
 }

@@ -9,25 +9,29 @@ import (
 	"go.uber.org/zap"
 )
 
-func (a api) indexHandler(w http.ResponseWriter, r *http.Request) {
-	data := domain.StaticData{
-		Name: "YourNameHere", // Replace "YourNameHere" with the desired name
+func getStaticHandler(fSys fs.FS, logger *zap.Logger) (index, static http.HandlerFunc) {
+
+	index = func(w http.ResponseWriter, r *http.Request) {
+		data := domain.StaticData{
+			Name: "YourNameHere",
+		}
+
+		fileContents, err := fs.ReadFile(fSys, "index.html")
+		if err != nil {
+			logger.Error("failed to read file 'index.html' from assets filesystem", zap.Error(err))
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		tmpl := template.Must(template.New("index").Delims("[{[", "]}]").Parse(string(fileContents)))
+		if err := tmpl.Execute(w, data); err != nil {
+			logger.Error("failed to execute template", zap.Error(err))
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}
 
-	fileContents, err := fs.ReadFile(a.assetsFs, "index.html")
-	if err != nil {
-		errorMessage := "failed to read file 'index.html' from assets filesystem"
-		a.logger.Error(errorMessage, zap.Error(err))
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	static = http.FileServer(http.FS(fSys)).ServeHTTP
 
-	index := template.Must(template.New("index").Delims("[{[", "]}]").Parse(string(fileContents)))
-	err = index.Execute(w, data)
-	if err != nil {
-		errorMessage := "failed to execute template"
-		a.logger.Error(errorMessage, zap.Error(err))
-		http.Error(w, errorMessage, http.StatusInternalServerError)
-		return
-	}
+	return index, static
 }
