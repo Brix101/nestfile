@@ -3,6 +3,7 @@ package api
 import (
 	"io/fs"
 	"net/http"
+	"strings"
 	"text/template"
 
 	"github.com/Brix101/nestfile/internal/domain"
@@ -12,6 +13,13 @@ import (
 func getStaticHandler(fSys fs.FS, logger *zap.Logger) (index, static http.HandlerFunc) {
 
 	index = func(w http.ResponseWriter, r *http.Request) {
+
+		// Check if the request path contains "/api/"
+		if strings.Contains(r.URL.Path, "/api/") {
+			http.NotFound(w, r)
+			return
+		}
+
 		data := domain.StaticData{
 			Name: "YourNameHere",
 		}
