@@ -1,11 +1,11 @@
+import { Suspense, lazy } from "react";
 import {
   Navigate,
   RouterProvider,
   createBrowserRouter,
 } from "react-router-dom";
-import { Suspense, lazy } from "react";
 
-import ProtectedRoute from "@/components/ProtectedRoute";
+import ResourcesLayout from "@/components/layout/ResourcesLayout";
 import { useUser } from "@/hooks/useUser";
 
 const LoginPage = lazy(() => import("@/pages/Login"));
@@ -22,7 +22,7 @@ function PageProvider() {
       },
       {
         path: "/files",
-        element: <ProtectedRoute />,
+        element: <ResourcesLayout />,
         children: [{ index: true, element: <FileListingPage /> }],
       },
     ],
