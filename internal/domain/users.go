@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/Brix101/nestfile/internal/util"
-	"github.com/golang-jwt/jwt/v5"
 )
 
 type User struct {
@@ -14,11 +13,6 @@ type User struct {
 	Password  string    `json:"-"`
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
-}
-
-func (u User) CheckPwd(password string) bool {
-	res := util.CheckPwd(password, u.Password)
-	return res
 }
 
 func (u *User) HashPwd() error {
@@ -31,35 +25,9 @@ func (u *User) HashPwd() error {
 	return nil
 }
 
-type AuthToken struct {
-	jwt.RegisteredClaims
-	Sub int `json:"sub"`
-}
-
-// TODO move this constant into a config
-const TokenSecret = "TGPTOfayPAqvUSRxRWhyyo4DsKwVxjQPJLa4Vim4u8E"
-
-func (u User) GenerateClaims() (string, error) {
-	tokenSecret := TokenSecret
-	claims := AuthToken{
-		jwt.RegisteredClaims{
-			IssuedAt:  jwt.NewNumericDate(time.Now()),
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24)),
-			Issuer:    "Nestfile",
-		},
-		int(u.ID),
-	}
-
-	// Create token with claims
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-
-	// Generate encoded token and send it as response.
-	t, err := token.SignedString([]byte(tokenSecret))
-	if err != nil {
-		return "", err
-	}
-
-	return t, nil
+func (u User) CheckPwd(password string) bool {
+	res := util.CheckPwd(password, u.Password)
+	return res
 }
 
 type UserRepository interface {
