@@ -28,6 +28,7 @@ export function UserAuthForm() {
 
   const { mutate, isPending } = useMutateUserLogin({
     onError: (error) => {
+      // TODO add the validation error from backend
       console.log(error);
     },
   });

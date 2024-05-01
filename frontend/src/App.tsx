@@ -1,4 +1,5 @@
 import "@/assets/css/index.css";
+import "@/assets/css/custom.css";
 
 import { TailwindIndicator } from "@/components/TailwindIndicator";
 import { Toaster } from "@/components/ui/sonner";

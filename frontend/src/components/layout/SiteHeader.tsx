@@ -1,8 +1,8 @@
+import { AuthUserDropDown } from "@/components/AuthUserDropdown";
 import { CommandMenu } from "@/components/CommandMenu";
 import ModeToggle from "@/components/ModeToggle";
 import { Icons } from "@/components/icons";
 import { siteConfig } from "@/config/site";
-import { UserDropdown } from "../UserDropdown";
 import { useUser } from "@/hooks/useUser";
 
 function SiteHeader() {
@@ -22,7 +22,7 @@ function SiteHeader() {
         <div className="flex items-center justify-between space-x-2 md:justify-end">
           <nav className="flex items-center space-x-2">
             <ModeToggle />
-            <UserDropdown user={user} />
+            <AuthUserDropDown user={user} />
           </nav>
         </div>
       </div>
