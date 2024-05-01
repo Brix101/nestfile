@@ -12,7 +12,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func (a api) AuthRoutes() chi.Router {
+func (a api) authRoutes() chi.Router {
 	r := chi.NewRouter()
 	// r.Use() // some middleware..
 	r.Post("/login", a.loginHandler)

@@ -70,8 +70,9 @@ func (a *api) Routes() *chi.Mux {
 	r.Get("/assets/*", static)
 
 	r.Route("/api", func(r chi.Router) {
-		r.Mount("/auth", a.AuthRoutes())
-		r.Mount("/users", a.UserRoutes())
+		r.Mount("/auth", a.authRoutes())
+		r.Mount("/users", a.userRoutes())
+		r.Mount("/resources", a.resourceRoutes())
 	})
 
 	r.NotFound(index)
