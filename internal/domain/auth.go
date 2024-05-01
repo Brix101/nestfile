@@ -6,20 +6,23 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
+// TODO move this constant into a config
+const (
+	TokenSecret                = "TGPTOfayPAqvUSRxRWhyyo4DsKwVxjQPJLa4Vim4u8E"
+	DefaultTokenExpirationTime = time.Hour * 24
+)
+
 type AuthToken struct {
 	jwt.RegisteredClaims
 	Sub int `json:"sub"`
 }
-
-// TODO move this constant into a config
-const TokenSecret = "TGPTOfayPAqvUSRxRWhyyo4DsKwVxjQPJLa4Vim4u8E"
 
 func (u User) GenerateClaims() (string, error) {
 	tokenSecret := TokenSecret
 	claims := AuthToken{
 		jwt.RegisteredClaims{
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(DefaultTokenExpirationTime)),
 			Issuer:    "Nestfile",
 		},
 		int(u.ID),

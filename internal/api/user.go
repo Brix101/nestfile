@@ -7,6 +7,7 @@ import (
 
 	"github.com/Brix101/nestfile/internal/domain"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-playground/validator"
 	"go.uber.org/zap"
 )
 
@@ -35,18 +36,11 @@ func (a api) userListHandler(w http.ResponseWriter, r *http.Request) {
 	data, err := a.userRepo.GetAll(ctx)
 	if err != nil {
 		a.logger.Error("failed to fetch all user from database", zap.Error(err))
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		a.responseError(w, r, err, 00)
 		return
 	}
 
-	res, err := json.Marshal(data)
-	if err != nil {
-		http.Error(w, "Error marshaling response", http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(res)
+	a.responseJSON(w, r, data)
 }
 
 type createUserRequest struct {
@@ -60,7 +54,13 @@ func (a api) userCreateHandler(w http.ResponseWriter, r *http.Request) {
 
 	var reqBody createUserRequest
 	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		a.responseError(w, r, err, 500)
+		return
+	}
+
+	validate := validator.New()
+	if err := validate.Struct(reqBody); err != nil {
+		a.responseError(w, r, err, 400)
 		return
 	}
 
@@ -70,27 +70,19 @@ func (a api) userCreateHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := dUsr.HashPwd(); err != nil {
-		a.logger.Error("failed to create user", zap.Error(err))
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		a.logger.Error("failed to hash user password", zap.Error(err))
+		a.responseError(w, r, err, 500)
 		return
 	}
 
 	usr, err := a.userRepo.Create(ctx, &dUsr)
 	if err != nil {
 		a.logger.Error("failed to create user", zap.Error(err))
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		a.responseError(w, r, err, 500)
 		return
 	}
 
-	resJSON, err := json.Marshal(usr)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(resJSON)
+	a.responseJSON(w, r, usr)
 }
 
 func (a api) userGetHandler(w http.ResponseWriter, r *http.Request) {

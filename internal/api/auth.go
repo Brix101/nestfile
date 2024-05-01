@@ -28,52 +28,42 @@ type loginRequest struct {
 	Password string `json:"password" validate:"required,min=6"` // Minimum length: 6
 }
 
-type ResponseUser struct {
-	User *domain.User `json:"user"`
-}
-
 func (a api) loginHandler(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithCancel(r.Context())
 	defer cancel()
 
 	var reqBody loginRequest
 	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		a.responseError(w, r, err, 500)
 		return
 	}
 
 	validate := validator.New()
 	if err := validate.Struct(reqBody); err != nil {
-		http.Error(w, err.Error(), 400)
+		a.responseError(w, r, err, 400)
 		return
 	}
 
 	usr, err := a.userRepo.GetByUsername(ctx, reqBody.Username)
 	if err != nil {
-		http.Error(w, domain.ErrInvalidCredentials.Error(), 401)
+		a.responseError(w, r, domain.ErrInvalidCredentials, 401)
 		return
 	}
 
 	if isValPass := usr.CheckPwd(reqBody.Password); !isValPass {
-		http.Error(w, domain.ErrInvalidCredentials.Error(), 401)
+		a.responseError(w, r, domain.ErrInvalidCredentials, 401)
 		return
 	}
 
 	token, err := usr.GenerateClaims()
 	if err != nil {
 		a.logger.Error("failed to generate user claims", zap.Error(err))
-		http.Error(w, err.Error(), 500)
+		a.responseError(w, r, err, 500)
 		return
 	}
 
-	data := ResponseUser{
+	data := domain.ResponseUser{
 		User: &usr,
-	}
-
-	resJSON, err := json.Marshal(data)
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
 	}
 
 	// Create and set cookies in the response
@@ -86,24 +76,12 @@ func (a api) loginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.SetCookie(w, &cookie)
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(resJSON)
-
+	a.responseJSON(w, r, data)
 }
 
 func (a api) logoutHandler(w http.ResponseWriter, r *http.Request) {
-	data := ResponseUser{
-		User: nil,
-	}
 
-	resJSON, err := json.Marshal(data)
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-
+	data := domain.ResponseUser{}
 	// Create and set cookies in the response
 	cookie := http.Cookie{
 		Name:     middlewares.NestfileToken, // Cookie name
@@ -114,10 +92,7 @@ func (a api) logoutHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.SetCookie(w, &cookie)
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(resJSON)
+	a.responseJSON(w, r, data)
 }
 
 func (a api) signUpHandler(w http.ResponseWriter, r *http.Request) {
@@ -144,14 +119,5 @@ func (a api) getUserHandler(w http.ResponseWriter, r *http.Request) {
 		User: user,
 	}
 
-	// Convert data object to JSON
-	jsonResponse, err := json.Marshal(data)
-	if err != nil {
-		http.Error(w, "Failed to marshal JSON", http.StatusInternalServerError)
-		return
-	}
-
-	// Set response Content-Type header
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(jsonResponse)
+	a.responseJSON(w, r, data)
 }

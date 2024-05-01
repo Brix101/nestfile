@@ -15,6 +15,10 @@ type User struct {
 	UpdatedAt time.Time `json:"updatedAt"`
 }
 
+type ResponseUser struct {
+	User *User `json:"user"`
+}
+
 func (u *User) HashPwd() error {
 	pwd, err := util.HashPwd(u.Password)
 	if err != nil {
