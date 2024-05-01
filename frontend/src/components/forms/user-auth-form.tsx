@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { useMutateUserLogin } from "@/hooks/mutation";
 import { loginSchema } from "@/lib/validations/auth";
 import { LoginInput } from "@/types/auth";
+import { toast } from "sonner";
 
 export function UserAuthForm() {
   const form = useForm<LoginInput>({
@@ -28,8 +29,14 @@ export function UserAuthForm() {
 
   const { mutate, isPending } = useMutateUserLogin({
     onError: (error) => {
-      // TODO add the validation error from backend
-      console.log(error);
+      const res = error.response;
+      if (res?.status === 401) {
+        form.setError("username", res.data);
+      } else {
+        toast(res?.statusText, {
+          description: error.message,
+        });
+      }
     },
   });
 

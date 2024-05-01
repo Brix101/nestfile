@@ -30,7 +30,7 @@ func APICmd(ctx context.Context) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			db.Close()
+			// db.Close()
 
 			assetsFs, err := fs.Sub(frontend.Assets(), "dist")
 			if err != nil {

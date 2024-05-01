@@ -13,7 +13,7 @@ import { UserResource } from "@/types/user";
 function useUserLogin(
   options?: UseMutationOptions<
     AxiosResponse<UserResource, AxiosError>,
-    Error,
+    AxiosError<ServerError>,
     LoginInput
   >,
 ) {

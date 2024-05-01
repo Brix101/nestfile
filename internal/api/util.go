@@ -1,21 +1,23 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
 
 	"github.com/Brix101/nestfile/internal/domain"
+	"github.com/Brix101/nestfile/internal/middlewares"
 	"github.com/Brix101/nestfile/internal/util"
 	"github.com/go-playground/validator"
 	"github.com/mattn/go-sqlite3"
 )
 
-func  (a api) responseJSON(w http.ResponseWriter, _ *http.Request, data interface{}) {
+func (a api) responseJSON(w http.ResponseWriter, r *http.Request, data interface{}) {
 	marsh, err := json.Marshal(data)
 	if err != nil {
-		http.Error(w, err.Error(), 500)
+		a.responseError(w, r, err, 500)
 		return
 	}
 
@@ -24,7 +26,7 @@ func  (a api) responseJSON(w http.ResponseWriter, _ *http.Request, data interfac
 	w.Write(marsh)
 }
 
-func (a api)responseError(w http.ResponseWriter, _ *http.Request, err error, status int) {
+func (a api) responseError(w http.ResponseWriter, _ *http.Request, err error, status int) {
 	var errData domain.ErrResponse
 
 	switch typedErr := err.(type) {
@@ -107,4 +109,23 @@ func (a api)responseError(w http.ResponseWriter, _ *http.Request, err error, sta
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(status)
 	w.Write(marsh)
+}
+
+func (a api) getAuthUser(_ http.ResponseWriter, r *http.Request) *domain.User {
+	ctx, cancel := context.WithCancel(r.Context())
+	defer cancel()
+
+	var user *domain.User
+	usrCtx := ctx.Value(middlewares.UserCtxKey{})
+	if usrCtx != nil {
+		item, ok := usrCtx.(*domain.AuthToken)
+		if ok {
+			usr, err := a.userRepo.GetByID(ctx, int64(item.Sub))
+			if err == nil {
+				user = &usr
+			}
+		}
+	}
+
+	return user
 }

@@ -100,22 +100,9 @@ func (a api) signUpHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a api) getUserHandler(w http.ResponseWriter, r *http.Request) {
-	ctx, cancel := context.WithCancel(r.Context())
-	defer cancel()
-	// TODO move this section to its own  getter
-	var user *domain.User
-	usrCtx := ctx.Value(middlewares.UserCtxKey{})
-	if usrCtx != nil {
-		item, ok := usrCtx.(*domain.AuthToken)
-		if ok {
-			usr, err := a.userRepo.GetByID(ctx, int64(item.Sub))
-			if err == nil {
-				user = &usr
-			}
-		}
-	}
+	user := a.getAuthUser(w, r)
 
-	data := ResponseUser{
+	data := domain.ResponseUser{
 		User: user,
 	}
 
