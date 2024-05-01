@@ -54,7 +54,7 @@ export function UserAuthForm() {
             <FormItem>
               <FormLabel>Username</FormLabel>
               <FormControl>
-                <Input type="text" placeholder="username" {...field} />
+                <Input type="text" placeholder="Brix101" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
