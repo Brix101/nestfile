@@ -23,7 +23,7 @@ func (a api) authRoutes() chi.Router {
 	return r
 }
 
-type loginRequest struct {
+type LoginDTO struct {
 	Username string `json:"username" validate:"required"`
 	Password string `json:"password" validate:"required,min=6"` // Minimum length: 6
 }
@@ -32,25 +32,25 @@ func (a api) loginHandler(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithCancel(r.Context())
 	defer cancel()
 
-	var reqBody loginRequest
-	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+	var loginData LoginDTO
+	if err := json.NewDecoder(r.Body).Decode(&loginData); err != nil {
 		a.responseError(w, r, err, 500)
 		return
 	}
 
 	validate := validator.New()
-	if err := validate.Struct(reqBody); err != nil {
+	if err := validate.Struct(loginData); err != nil {
 		a.responseError(w, r, err, 400)
 		return
 	}
 
-	usr, err := a.userRepo.GetByUsername(ctx, reqBody.Username)
+	usr, err := a.userRepo.GetByUsername(ctx, loginData.Username)
 	if err != nil {
 		a.responseError(w, r, domain.ErrInvalidCredentials, 401)
 		return
 	}
 
-	if isValPass := usr.CheckPwd(reqBody.Password); !isValPass {
+	if isValPass := usr.CheckPwd(loginData.Password); !isValPass {
 		a.responseError(w, r, domain.ErrInvalidCredentials, 401)
 		return
 	}
