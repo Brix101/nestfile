@@ -4,7 +4,7 @@ import { LoginInput, Resources } from "@/types/auth";
 import { UserResource } from "@/types/user";
 
 export async function fetchUser() {
-  const res = await api.get<Resources>("/auth/user");
+  const res = await api.get<Resources>("/auth/me");
   return res.data;
 }
 
