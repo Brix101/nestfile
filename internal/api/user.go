@@ -20,7 +20,7 @@ func (a api) userRoutes() chi.Router {
 	r.Put("/", a.userDeleteHandler)
 
 	r.Route("/{id}", func(r chi.Router) {
-		// r.Use(a.TodoCtx) // lets have a users map, and lets actually load/manipulate
+		// r.Use(a.userCtx) // lets have a users map, and lets actually load/manipulate
 		r.Get("/", a.userGetHandler)       // GET /users/{id} - read a single user by :id
 		r.Put("/", a.userUpdateHandler)    // PUT /users/{id} - update a single user by :id
 		r.Delete("/", a.userDeleteHandler) // DELETE /users/{id} - delete a single user by :id
@@ -43,7 +43,7 @@ func (a api) userListHandler(w http.ResponseWriter, r *http.Request) {
 	a.responseJSON(w, r, data)
 }
 
-type createUserRequest struct {
+type createUserDTO struct {
 	Username string `json:"userName" validate:"required"`
 	Password string `json:"password" validate:"required,min=6"` // Minimum length: 6
 }
@@ -52,21 +52,21 @@ func (a api) userCreateHandler(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithCancel(r.Context())
 	defer cancel()
 
-	var reqBody createUserRequest
-	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+	var reqDTO createUserDTO
+	if err := json.NewDecoder(r.Body).Decode(&reqDTO); err != nil {
 		a.responseError(w, r, err, 500)
 		return
 	}
 
 	validate := validator.New()
-	if err := validate.Struct(reqBody); err != nil {
+	if err := validate.Struct(reqDTO); err != nil {
 		a.responseError(w, r, err, 400)
 		return
 	}
 
 	dUsr := domain.User{
-		Username: reqBody.Username,
-		Password: reqBody.Password,
+		Username: reqDTO.Username,
+		Password: reqDTO.Password,
 	}
 
 	if err := dUsr.HashPwd(); err != nil {
