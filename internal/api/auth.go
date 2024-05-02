@@ -50,7 +50,7 @@ func (a api) loginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if isValPass := usr.CheckPwd(loginData.Password); !isValPass {
+	if ok := usr.CheckPwd(loginData.Password); !ok {
 		a.responseError(w, r, domain.ErrInvalidCredentials, 401)
 		return
 	}
