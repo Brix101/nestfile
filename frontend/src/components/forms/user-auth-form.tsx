@@ -33,8 +33,9 @@ export function UserAuthForm() {
       if (res?.status === 401) {
         form.setError("username", res.data);
       } else {
+        const message = res?.data?.message || error.message;
         toast(res?.statusText, {
-          description: error.message,
+          description: message,
         });
       }
     },
