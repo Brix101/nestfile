@@ -64,18 +64,18 @@ func (a api) userCreateHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	dUsr := domain.User{
+	usr := domain.User{
 		Username: reqDTO.Username,
 		Password: reqDTO.Password,
 	}
 
-	if err := dUsr.HashPwd(); err != nil {
+	if err := usr.HashPwd(); err != nil {
 		a.logger.Error("failed to hash user password", zap.Error(err))
 		a.responseError(w, r, err, 500)
 		return
 	}
 
-	usr, err := a.userRepo.Create(ctx, &dUsr)
+	usr, err := a.userRepo.Create(ctx, &usr)
 	if err != nil {
 		a.logger.Error("failed to create user", zap.Error(err))
 		a.responseError(w, r, err, 500)
