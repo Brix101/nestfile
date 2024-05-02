@@ -31,7 +31,6 @@ func (a api) responseError(w http.ResponseWriter, _ *http.Request, err error, st
 
 	switch typedErr := err.(type) {
 	case sqlite3.Error:
-
 		fieldName := "field" // Default field name if constraint name is not in the expected format
 		parts := strings.Split(typedErr.Error(), ":")
 		if len(parts) > 0 {
@@ -68,7 +67,6 @@ func (a api) responseError(w http.ResponseWriter, _ *http.Request, err error, st
 		}
 
 	case validator.ValidationErrors:
-		fmt.Println("Validation")
 		errorFields := []domain.ErrField{}
 		for _, e := range typedErr {
 			errorFields = append(errorFields, domain.ErrField{
