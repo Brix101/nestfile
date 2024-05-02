@@ -1,9 +1,9 @@
 import React from "react";
 
 import { UserContext } from "@/context/user";
-import { deriveState } from "@/lib/deriveState";
 import { InitialState, Resources } from "@/types/auth";
 import { useQueryAuthUser } from "@/hooks/query";
+import { deriveState } from "@/utils/deriveState";
 
 export type AuthContextProviderState = Resources;
 

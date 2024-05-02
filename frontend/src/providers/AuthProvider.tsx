@@ -9,6 +9,7 @@ function AuthProvider({ children }: React.PropsWithChildren) {
 
   const query = getUserQuery();
   const data = queryClient.getQueryData<Resources>(query.queryKey);
+
   const initialState: InitialState = {
     userId: data?.user?.id,
     user: data?.user,

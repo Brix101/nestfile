@@ -1,7 +1,7 @@
 import { UserAuthForm } from "@/components/forms/user-auth-form";
 import { Card } from "@/components/ui/card";
 
-function LoginPage() {
+export function Login() {
   return (
     <>
       <div className="container relative flex h-screen  items-center justify-center ">
@@ -20,5 +20,3 @@ function LoginPage() {
     </>
   );
 }
-
-export default LoginPage;

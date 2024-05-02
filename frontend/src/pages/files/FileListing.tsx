@@ -2,7 +2,7 @@ import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { useMutateUserLogout } from "@/hooks/mutation";
 
-function FileListingPage() {
+export function FileListing() {
   const { mutate, isPending } = useMutateUserLogout();
 
   return (
@@ -21,5 +21,3 @@ function FileListingPage() {
     </div>
   );
 }
-
-export default FileListingPage;

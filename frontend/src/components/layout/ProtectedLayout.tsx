@@ -1,9 +1,10 @@
 import { Navigate, Outlet } from "react-router-dom";
 
 import { useUser } from "@/hooks/useUser";
+
 import SiteHeader from "./SiteHeader";
 
-function ResourcesLayout() {
+function ProtectedLayout() {
   const { user, isLoaded } = useUser();
 
   if (isLoaded && !user) {
@@ -18,4 +19,4 @@ function ResourcesLayout() {
   );
 }
 
-export default ResourcesLayout;
+export default ProtectedLayout;
