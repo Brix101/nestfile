@@ -18,7 +18,7 @@ func (a api) authRoutes() chi.Router {
 	r.Post("/login", a.loginHandler)
 	r.Post("/logout", a.logoutHandler)
 	r.Post("/sign-up", a.signUpHandler)
-	r.Get("/user", a.getUserHandler)
+	r.Get("/me", a.getUserHandler)
 
 	return r
 }
