@@ -1,13 +1,15 @@
-import { AuthUserDropDown } from "@/components/AuthUserDropdown";
 import { CommandMenu } from "@/components/CommandMenu";
 import ModeToggle from "@/components/ModeToggle";
+import { UserDropDown } from "@/components/UserDropdown";
 import { Icons } from "@/components/icons";
 import { siteConfig } from "@/config/site";
-import { useUser } from "@/hooks/useUser";
+import { UserResource } from "@/features/auth";
 
-function SiteHeader() {
-  const { user } = useUser();
+interface SiteHeaderProps {
+  user?: UserResource | null;
+}
 
+function SiteHeader({ user }: SiteHeaderProps) {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex justify-between h-14 max-w-screen-2xl items-center">
@@ -23,7 +25,7 @@ function SiteHeader() {
         <div className="flex items-center justify-between space-x-2 md:justify-end">
           <nav className="flex items-center space-x-2">
             <ModeToggle />
-            <AuthUserDropDown user={user} />
+            <UserDropDown user={user} />
           </nav>
         </div>
       </div>
