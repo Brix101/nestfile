@@ -5,8 +5,8 @@ import AuthContextProvider from "./AuthContextProvider";
 
 function AuthProvider({ children }: React.PropsWithChildren) {
   const queryClient = useQueryClient();
-
   const query = getUserQuery();
+
   type QueryType = Awaited<ReturnType<typeof query.queryFn>>;
 
   const data = queryClient.getQueryData<QueryType>(query.queryKey);

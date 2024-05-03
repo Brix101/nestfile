@@ -1,6 +1,8 @@
-import { useUserContext } from "@/context/user";
 import { UserResource } from "@/features/auth";
-import { useAssertWrappedByAuthProvider } from "@/providers/AuthContextProvider";
+import {
+  useAssertWrappedByAuthProvider,
+  useUserContext,
+} from "@/providers/AuthContextProvider";
 
 type UseUserReturn =
   | { isLoaded: false; isSignedIn: undefined; user: undefined }

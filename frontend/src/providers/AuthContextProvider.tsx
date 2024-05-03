@@ -1,8 +1,17 @@
 import React from "react";
 
-import { InitialState, Resources, useGetUser } from "@/features/auth";
+import {
+  InitialState,
+  Resources,
+  UserResource,
+  useGetUser,
+} from "@/features/auth";
 import { deriveState } from "@/utils/deriveState";
-import { UserContext } from "@/context/user";
+import { createContextAndHook } from "@/utils/createContextAndHook";
+
+export const [UserContext, useUserContext] = createContextAndHook<
+  UserResource | null | undefined
+>("UserContext");
 
 export type AuthContextProviderState = Resources;
 
