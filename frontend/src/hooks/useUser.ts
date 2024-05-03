@@ -1,5 +1,5 @@
-import { UserResource } from "@/types/user";
 import { useUserContext } from "@/context/user";
+import { UserResource } from "@/features/auth";
 import { useAssertWrappedByAuthProvider } from "@/providers/AuthContextProvider";
 
 type UseUserReturn =

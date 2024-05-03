@@ -1,9 +1,8 @@
 import React from "react";
 
-import { UserContext } from "@/context/user";
-import { InitialState, Resources } from "@/types/auth";
-import { useQueryAuthUser } from "@/hooks/query";
+import { InitialState, Resources, useGetUser } from "@/features/auth";
 import { deriveState } from "@/utils/deriveState";
+import { UserContext } from "@/context/user";
 
 export type AuthContextProviderState = Resources;
 
@@ -12,7 +11,7 @@ interface AuthProviderProps extends React.PropsWithChildren {
 }
 
 function AuthContextProvider({ children, initialState }: AuthProviderProps) {
-  const { data, isLoading } = useQueryAuthUser();
+  const { data, isLoading } = useGetUser();
 
   const [state, setState] = React.useState<AuthContextProviderState>({
     ...data,

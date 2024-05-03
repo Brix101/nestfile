@@ -28,5 +28,5 @@ export type MutationConfig<MutationFnType extends (...args: any) => any> =
   UseMutationOptions<
     ExtractFnReturnType<MutationFnType>,
     AxiosError<ServerError>,
-    Parameters<MutationFnType>[0]
+    Parameters<MutationFnType>[0] | void
   >;

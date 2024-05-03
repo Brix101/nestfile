@@ -1,14 +1,15 @@
 import { useQueryClient } from "@tanstack/react-query";
 
-import { getUserQuery } from "@/services/user-service";
-import { InitialState, Resources } from "@/types/auth";
+import { InitialState, getUserQuery } from "@/features/auth";
 import AuthContextProvider from "./AuthContextProvider";
 
 function AuthProvider({ children }: React.PropsWithChildren) {
   const queryClient = useQueryClient();
 
   const query = getUserQuery();
-  const data = queryClient.getQueryData<Resources>(query.queryKey);
+  type QueryType = Awaited<ReturnType<typeof query.queryFn>>;
+
+  const data = queryClient.getQueryData<QueryType>(query.queryKey);
 
   const initialState: InitialState = {
     userId: data?.user?.id,

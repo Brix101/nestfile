@@ -1,3 +1,3 @@
 export const QUERY_KEYS = {
-  auth_user: "auth-user",
+  AUTH_USER: "auth-user",
 };

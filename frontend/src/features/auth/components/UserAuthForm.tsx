@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 import PasswordInput from "@/components/PasswordInput";
 import { Icons } from "@/components/icons";
@@ -13,11 +14,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { loginSchema } from "@/lib/validations/auth";
-import { LoginInput } from "@/types/auth";
-import { toast } from "sonner";
-import { useUserLogin } from "../api/login";
-import { LoginDTO } from "../types";
+import { LoginDTO, loginSchema, useUserLogin } from "../api/login";
 
 export function UserAuthForm() {
   const form = useForm<LoginDTO>({
@@ -42,7 +39,7 @@ export function UserAuthForm() {
     },
   });
 
-  async function onSubmit(data: LoginInput) {
+  async function onSubmit(data: LoginDTO) {
     mutate(data);
   }
 

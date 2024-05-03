@@ -1,40 +1,18 @@
-import {
-  Navigate,
-  RouterProvider,
-  createBrowserRouter,
-} from "react-router-dom";
-
-import ProtectedLayout from "@/components/layout/ProtectedLayout";
-
-import { useUser } from "@/hooks/useUser";
-
-import { lazyImport } from "@/utils/lazyImport";
-import { Loader } from "@/components/Loader";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import React from "react";
 
-const { Login } = lazyImport(() => import("@/pages/Login"), "Login");
-const { FileListing } = lazyImport(
-  () => import("@/pages/files/FileListing"),
-  "FileListing",
-);
+import { useUser } from "@/hooks/useUser";
+import { Loader } from "@/components/Loader";
+
+import { protectedRoutes } from "./protected";
+import { publicRoutes } from "./public";
 
 export function AppRoutes() {
-  const { isSignedIn } = useUser();
+  const user = useUser();
 
-  const routes = createBrowserRouter(
-    [
-      {
-        index: true,
-        element: isSignedIn ? <Navigate to="/files" /> : <Login />,
-      },
-      {
-        path: "/files",
-        element: <ProtectedLayout />,
-        children: [{ index: true, element: <FileListing /> }],
-      },
-    ],
-    {},
-  );
+  const routes = user.isSignedIn ? protectedRoutes : publicRoutes;
+
+  const router = createBrowserRouter([...routes], {});
 
   return (
     <React.Suspense
@@ -44,7 +22,7 @@ export function AppRoutes() {
         </div>
       }
     >
-      <RouterProvider router={routes} />
+      <RouterProvider router={router} />
     </React.Suspense>
   );
 }

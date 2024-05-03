@@ -1,5 +1,4 @@
-import { InitialState, Resources } from "@/types/auth";
-import { UserResource } from "@/types/user";
+import { InitialState, Resources, UserResource } from "@/features/auth";
 
 export const deriveState = (
   authLoaded: boolean,

@@ -11,7 +11,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-import { UserResource } from "@/types/user";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,8 +22,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { useMutateUserLogout } from "@/hooks/mutation";
 import { Icons } from "./icons";
+import { useLogout } from "@/features/auth/api/logout";
+import { UserResource } from "@/features/auth";
 
 interface UserDropdownProps extends ButtonProps {
   user?: UserResource | null;
@@ -80,7 +80,7 @@ export function AuthUserDropDown({
 }
 
 export function LogoutAlertDialog() {
-  const { mutate, isPending } = useMutateUserLogout();
+  const { mutate, isPending } = useLogout();
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>

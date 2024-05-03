@@ -1,5 +1,5 @@
-import { UserAuthForm } from "@/components/forms/user-auth-form";
 import { Card } from "@/components/ui/card";
+import { UserAuthForm } from "../components/UserAuthForm";
 
 export function Login() {
   return (

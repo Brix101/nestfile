@@ -1,4 +1,4 @@
-import { UserResource } from "@/types/user";
+import { UserResource } from "@/features/auth";
 import { createContextAndHook } from "@/utils/createContextAndHook";
 
 const [UserContext, useUserContext] = createContextAndHook<
