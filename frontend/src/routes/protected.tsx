@@ -1,9 +1,9 @@
 import React from "react";
-import { Outlet, RouteObject } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 
 import { Loader } from "@/components/Loader";
-import { lazyImport } from "@/utils/lazyImport";
 import { MainLayout } from "@/components/layout/MainLayout";
+import { lazyImport } from "@/utils/lazyImport";
 
 const { Files } = lazyImport(() => import("@/features/files"), "Files");
 
@@ -23,7 +23,7 @@ const App = () => {
   );
 };
 
-export const protectedRoutes: RouteObject[] = [
+export const protectedRoutes = [
   {
     path: "/",
     element: <App />,
