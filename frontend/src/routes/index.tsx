@@ -9,7 +9,11 @@ export function AppRoutes() {
 
   const routes = user.isSignedIn ? protectedRoutes : publicRoutes;
 
-  const elements = useRoutes([...routes]);
+  const elements = useRoutes([
+    ...routes,
+
+    // { path: "*", element: <Navigate to="." /> },
+  ]);
 
   return <>{elements}</>;
 }

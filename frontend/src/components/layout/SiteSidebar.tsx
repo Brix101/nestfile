@@ -1,8 +1,9 @@
+import { NewFileMenu } from "@/components/new-file-menu";
+import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
 import { UserResource } from "@/features/auth";
 import { cn } from "@/lib/utils";
-import { Button } from "../ui/button";
-import { Separator } from "../ui/separator";
 
 interface SiteSidebarProps extends React.HTMLAttributes<HTMLElement> {
   children?: React.ReactNode;
@@ -19,10 +20,10 @@ export function SiteSideBar({
     <aside className={cn("w-full", className)} {...props}>
       <ScrollArea className="h-[calc(100vh-8rem)] py-2.5 pr-6">
         <div className="flex flex-col gap-4">
-          <Button>My Files</Button>
+          <NewFileMenu />
           <Separator />
-          <Button>New Folder</Button>
-          <Button>New File</Button>
+          <Button>Home</Button>
+          <Button>My Files</Button>
           <Separator />
           <Button>Settings</Button>
         </div>

@@ -1,5 +1,5 @@
 import React from "react";
-import { Outlet } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 
 import { Loader } from "@/components/Loader";
 import { MainLayout } from "@/components/layout/MainLayout";
@@ -27,6 +27,9 @@ export const protectedRoutes = [
   {
     path: "/",
     element: <App />,
-    children: [{ index: true, element: <Files /> }],
+    children: [
+      { index: true, element: <Files /> },
+      { path: "*", element: <Navigate to="." /> },
+    ],
   },
 ];
