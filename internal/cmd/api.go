@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"fmt"
 	"io/fs"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -10,6 +11,7 @@ import (
 
 	"github.com/Brix101/nestfile/frontend"
 	"github.com/Brix101/nestfile/internal/api"
+	"github.com/Brix101/nestfile/internal/files"
 	"github.com/Brix101/nestfile/internal/util"
 )
 
@@ -34,6 +36,17 @@ func APICmd(ctx context.Context) *cobra.Command {
 			assetsFs, err := fs.Sub(frontend.Assets(), "dist")
 			if err != nil {
 				return err
+			}
+
+			directoryPath := "/mnt/Downloads"
+			fileList, err := files.ListFiles(directoryPath)
+			if err != nil {
+				return err
+			}
+
+			fmt.Println("Files in", directoryPath, ":")
+			for _, file := range fileList {
+				fmt.Println(file)
 			}
 
 			api := api.NewHTTPHandler(ctx, logger, db, assetsFs)
