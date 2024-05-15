@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/Brix101/nestfile/internal/domain"
+	"github.com/Brix101/nestfile/internal/files"
 	"github.com/Brix101/nestfile/internal/middlewares"
 	"github.com/Brix101/nestfile/internal/repository"
 	"github.com/go-chi/chi/v5"
@@ -24,7 +25,7 @@ type api struct {
 	userRepo domain.UserRepository
 }
 
-func NewHTTPHandler(ctx context.Context, logger *zap.Logger, db *sql.DB, assetsFs fs.FS) *api {
+func NewHTTPHandler(ctx context.Context, logger *zap.Logger, db *sql.DB, assetsFs fs.FS, fileServer *files.FileReader) *api {
 
 	userRepo := repository.NewSqlUser(db)
 

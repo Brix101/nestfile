@@ -2,8 +2,18 @@ package files
 
 import "os"
 
-func ListFiles(directoryPath string) ([]string, error) {
-	files, err := os.ReadDir(directoryPath)
+type FileReader struct {
+	basePath string
+}
+
+func NewFileReader(basePath string) *FileReader {
+	return &FileReader{
+		basePath: basePath,
+	}
+}
+
+func (fSer *FileReader) ListFiles() ([]string, error) {
+	files, err := os.ReadDir(fSer.basePath)
 	if err != nil {
 		return nil, err
 	}

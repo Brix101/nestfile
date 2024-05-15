@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io/fs"
+	"os"
 
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/spf13/cobra"
@@ -38,18 +39,24 @@ func APICmd(ctx context.Context) *cobra.Command {
 				return err
 			}
 
-			directoryPath := "/mnt/Downloads"
-			fileList, err := files.ListFiles(directoryPath)
+			homePath, err := os.UserHomeDir()
 			if err != nil {
 				return err
 			}
 
-			fmt.Println("Files in", directoryPath, ":")
+			fileSer := files.NewFileReader(homePath)
+
+			fileList, err := fileSer.ListFiles()
+			if err != nil {
+				return err
+			}
+
+			fmt.Println("Files in", homePath, ":")
 			for _, file := range fileList {
 				fmt.Println(file)
 			}
 
-			api := api.NewHTTPHandler(ctx, logger, db, assetsFs)
+			api := api.NewHTTPHandler(ctx, logger, db, assetsFs, fileSer)
 			srv := api.Server(port)
 
 			go func() { _ = srv.ListenAndServe() }()
